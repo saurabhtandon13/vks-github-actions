@@ -6,7 +6,7 @@ The setup uses **Helm** to deploy the controller and dynamically scale GitHub Ac
 
 ---
 
-## 📘 References
+##  References
 
 - **GitHub Actions Runner Controller (Official Docs)**  
   https://docs.github.com/en/actions/tutorials/use-actions-runner-controller/quickstart
@@ -16,7 +16,7 @@ The setup uses **Helm** to deploy the controller and dynamically scale GitHub Ac
 
 ---
 
-## 🧩 Architecture Overview
+##  Architecture Overview
 
 High-level flow:
 1. A GitHub Actions workflow is triggered
@@ -27,7 +27,7 @@ High-level flow:
 
 ---
 
-## ✅ Prerequisites
+##  Prerequisites
 
 Ensure the following are available before proceeding:
 
@@ -39,23 +39,23 @@ Ensure the following are available before proceeding:
 
 ---
 
-## 🚀 Installing Actions Runner Controller
+## Installing Actions Runner Controller
 
 Actions Runner Controller (ARC) is a Kubernetes controller that manages **self-hosted GitHub Actions runners** as ephemeral Kubernetes pods.
 
-### Step 1: Set the Namespace
+### Install Action Runner Comtroller 
 
 ```bash
 NAMESPACE="arc-systems"
 
-Step 2: Install ARC using Helm
+Step 1: Install ARC using Helm
 
 helm install arc \
   --namespace "${NAMESPACE}" \
   --create-namespace \
   oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
 
-Step 3: Verify Controller Pods
+Step 2: Verify Controller Pods
 
 kubectl get pods -n arc-systems
 
@@ -63,17 +63,19 @@ kubectl get pods -n arc-systems
 (Optional) Download Helm Chart for Offline Installation
 
 helm pull oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+```
 
-Step 4: GitHub Authentication
+## Installing GitHub Actions Runners
+
+```bash
+
+Step 1: GitHub Authentication
 
 You must authenticate ARC with GitHub using one of the following:
 
 GitHub Personal Access Token (PAT) or GitHub App
 
-
-Step 5: Installing GitHub Actions Runners
-
-Step 1: Define Environment Variables
+Step 2: Define Environment Variables
 
 INSTALLATION_NAME="arc-runner-vks"
 NAMESPACE="arc-runners"
@@ -81,7 +83,7 @@ GITHUB_CONFIG_URL="https://github.com/abc/vks-github-actions"
 GITHUB_PAT="<YOUR_GITHUB_PAT>"
 
 
-Step 2: Install Runner Scale Set
+Step 3: Install Runner Scale Set
 
 helm install "${INSTALLATION_NAME}" \
   --namespace "${NAMESPACE}" \
@@ -96,3 +98,4 @@ This creates a runner scale set that:
 - Automatically scales runners based on workload
 - Creates ephemeral runner pods
 - Deletes runners after job completion
+```
