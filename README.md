@@ -1,51 +1,98 @@
-# vks-github-actions #
-This repository is for the demostration of github actions with VKS 
+# vks-github-actions
 
-Offical Documentation:- 
-- [https://docs.github.com/en/actions/tutorials/use-actions-runner-controller/quickstart]
+This repository demonstrates how to run **GitHub Actions self-hosted runners on a VKS (Kubernetes) cluster** using **Actions Runner Controller (ARC)**.
 
-Helm Installation:- 
-- [https://helm.sh/docs/intro/install/]
+The setup uses **Helm** to deploy the controller and dynamically scale GitHub Actions runners as Kubernetes pods.
 
-## Software Requirements:- ### 
+---
 
-- Running VKS Cluster
-- Helm installation
-- Any Code Editor of choice
-- Github Token / Application ID
-- kubectl
+## 📘 References
 
-## Installing the Action Runner Controller ##
+- **GitHub Actions Runner Controller (Official Docs)**  
+  https://docs.github.com/en/actions/tutorials/use-actions-runner-controller/quickstart
 
-## Actions Runner Controller is a Kubernetes controller that manages self-hosted GitHub Actions runners as Kubernetes pods ###
+- **Helm Installation Guide**  
+  https://helm.sh/docs/intro/install/
 
-> NAMESPACE="arc-systems"
+---
 
-> helm install arc \
-    --namespace "${NAMESPACE}" \
-    --create-namespace \
-    oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+## 🧩 Architecture Overview
 
-###### To Download the above helm chart for offline install and edit values.yaml file #######
+High-level flow:
+1. A GitHub Actions workflow is triggered
+2. Actions Runner Controller detects the job
+3. A runner pod is created in Kubernetes
+4. The job executes inside the pod
+5. The pod is deleted after job completion
 
-> helm pull oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+---
 
-> kubectl get pods -n arc-systems                                                                                                                                                                                                      kube gihub-login:github-runner/github-actions root@globalmachine 10:03:25
-NAME                                     READY   STATUS    RESTARTS   AGE
-arc-gha-rs-controller-565c8dcd98-txz9m   1/1     Running   0          8m52s
+## ✅ Prerequisites
 
-### Create a Personal Access Token from the Github UI We can also do it from Github App ####
+Ensure the following are available before proceeding:
 
-### Install the Gitlab runners ####
+- A running VKS Kubernetes cluster
+- Helm (v3+)
+- kubectl configured to access the cluster
+- GitHub Personal Access Token (PAT) or GitHub App credentials
+- Any code editor (VS Code, Vim, etc.)
 
-INSTALLATION_NAME="arc-runner-vks"  # This name will be referenced while running jobs
+---
+
+## 🚀 Installing Actions Runner Controller
+
+Actions Runner Controller (ARC) is a Kubernetes controller that manages **self-hosted GitHub Actions runners** as ephemeral Kubernetes pods.
+
+### Step 1: Set the Namespace
+
+```bash
+NAMESPACE="arc-systems"
+
+Step 2: Install ARC using Helm
+
+helm install arc \
+  --namespace "${NAMESPACE}" \
+  --create-namespace \
+  oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
+Step 3: Verify Controller Pods
+
+kubectl get pods -n arc-systems
+
+
+(Optional) Download Helm Chart for Offline Installation
+
+helm pull oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+
+Step 4: GitHub Authentication
+
+You must authenticate ARC with GitHub using one of the following:
+
+GitHub Personal Access Token (PAT) or GitHub App
+
+
+Step 5: Installing GitHub Actions Runners
+
+Step 1: Define Environment Variables
+
+INSTALLATION_NAME="arc-runner-vks"
 NAMESPACE="arc-runners"
-GITHUB_CONFIG_URL="https://github.com/abc/vks-github-actions.git"
-GITHUB_PAT="<PAT>"
+GITHUB_CONFIG_URL="https://github.com/abc/vks-github-actions"
+GITHUB_PAT="<YOUR_GITHUB_PAT>"
 
-> helm install "${INSTALLATION_NAME}" \
+
+Step 2: Install Runner Scale Set
+
+helm install "${INSTALLATION_NAME}" \
   --namespace "${NAMESPACE}" \
   --create-namespace \
   --set githubConfigUrl="${GITHUB_CONFIG_URL}" \
   --set githubConfigSecret.github_token="${GITHUB_PAT}" \
   oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+
+
+This creates a runner scale set that:
+
+- Automatically scales runners based on workload
+- Creates ephemeral runner pods
+- Deletes runners after job completion
