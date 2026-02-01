@@ -14,14 +14,14 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install kubectl CLI 
-        shell: |
+        run: |
           curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubect"
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/kubectl
           kubectl version --client
 
       - name: Install VCF CLI
-        shell: |
+        run: |
           wget "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/v9.0.1/vcf-cli.tar.gz"
           tar -xvf vcf-cli.tar.gz
           sudo mv vcf-cli-linux_amd64 /usr/local/bin/vcf
