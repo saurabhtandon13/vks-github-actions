@@ -1,0 +1,147 @@
+apiVersion: cluster.x-k8s.io/v1beta2
+kind: Cluster
+metadata:
+  name: github-test
+  namespace: github-actions
+spec:
+  clusterNetwork:
+    services:
+      cidrBlocks: ["10.100.0.0/12"]
+    pods:
+      cidrBlocks: ["10.200.0.0/12"]
+    serviceDomain: "cluster.local"
+  topology:
+    classRef:
+      name: builtin-generic-v3.5.0
+      namespace: vmware-system-vks-public
+    version: v1.34.2---vmware.2-vkr.2
+    controlPlane:
+      replicas: 1
+      metadata:
+        annotations:
+          run.tanzu.vmware.com/resolve-os-image: "os-name=ubuntu,os-version=24.04"
+    workers:
+      machineDeployments:
+      - class: node-pool
+        name: node-pool-01
+        metadata:
+          annotations:
+            cluster.x-k8s.io/cluster-api-autoscaler-node-group-min-size: "1"
+            cluster.x-k8s.io/cluster-api-autoscaler-node-group-max-size: "3"
+            run.tanzu.vmware.com/resolve-os-image: "os-name=ubuntu,os-version=24.04"
+        deletion:
+          order: Oldest
+        rollout:
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 1
+              maxUnavailable: 1
+        variables:
+          overrides:
+          - name: vmClass
+            value: k8s-worker
+    variables:
+    - name: kubernetes
+      value:
+        kubeletConfiguration:
+          streamingConnectionIdleTimeout: "10m"
+          eventBurst: 80                                  # Default: 100
+          eventRecordQPS: 50                              # Default: 50
+          imageMinimumGCAge: "5m"                         # Default: "2m"
+          imageMaximumGCAge: "1h"
+          maxPods: 100                                    # Maximum pods per node (20-110)
+          logging:
+            format: "json"                                # Log format: "text" or "json"
+            verbosity: 2
+          containerLogMaxFiles: 5                         # Max container log files (1-100) default is 5
+          containerLogMaxSizeMiB: 20                      # Max log file size before rotation Default size is 10
+          serializeImagePulls: false
+          maxParallelImagePulls: 10
+        etcdConfiguration:
+          maximumDBSizeGiB: 4                             # Maximum etcd database size (2-8 GiB)
+        certificateRotation:
+          enabled: true
+          renewalDaysBeforeExpiry: 90
+        apiServerConfiguration:
+          logs:
+            flushFrequency: "5s"           # Maximum time between log flushes
+            format: "text"                 # Log format: "text" or "json"
+            verbosity: 2                   # Log verbosity level (0-6)
+          maxMutatingRequestsInFlight: 300  # Max mutating requests (0-5000)
+          maxRequestsInFlight: 600         # Max non-mutating requests (0-10000)
+          profiling: false
+          requestTimeout: "1m0s"            # Request timeout duration # Default: "1m0s"
+        security:
+          podSecurityStandard:
+            audit: "privileged"                           # OPTIONAL, enum: "", privileged, baseline, restricted
+            auditVersion: "latest"                         # OPTIONAL, e.g., "v1.31"
+            enforce: "privileged"                          # OPTIONAL, enum: "", privileged, baseline, restricted
+            enforceVersion: "latest"                       # OPTIONAL, e.g., "v1.31"
+            warn: "privileged"                             # OPTIONAL, enum: "", privileged, baseline, restricted
+            warnVersion: "latest"                          # OPTIONAL, e.g., "v1.31"
+#           exemptions:
+#             namespaces: ["privileged-workload-ns"]
+    - name: vmClass
+      value: k8s-master
+    - name: storageClass
+      value: vks-storage-policy
+    - name: node
+      value:
+        labels:
+          tenant: customer0
+          organization: engineering
+    - name: vsphereOptions
+      value:
+        persistentVolumes:
+          availableStorageClasses:
+            - vks-storage-policy
+          defaultStorageClass: vks-storage-policy
+         #availableVolumeSnapshotClasses:
+           #- vol-snapclass-foo
+           #- vol-snapclass-bar
+            #defaultVolumeSnapshotClass: vol-snapclass-bar
+            #customizableStorageClassAnnotations:
+              #- annotation-key-foo
+            #customizableStorageClassLabels:
+            #- label-key-foo
+    - name: volumes
+      value:
+        - name: containerd
+          mountPath: /var/lib/containerd
+          storageClass: vks-storage-policy
+          capacity: 15Gi
+        - name: kubelet
+          mountPath: /var/lib/kubelet
+          storageClass: vks-storage-policy
+          capacity: 15Gi
+    - name: osConfiguration
+      value:
+#        fips:                    #enabling this flag is not working
+#          enabled: true          #enabling this is not working 
+#        ubuntuPro:
+#          tokenSecretRef: ubuntu-pro-token
+#          services:
+#            - esm-infra
+#            - esm-apps
+#            - livepatch
+        ntp:
+          servers:
+            - ntp.broadcom.net
+        sshd:
+          banner: "Security Warning Accessing the carbon-wl cluster"
+#       trust:
+#         additionalTrustedCAs:
+#         - caCert:
+#             secretRef:
+#               name: "indus-wl01-user-trusted-ca-secret"       # Certs should be double base64 encoded
+#               key: registry-cert
+#         - caCert:
+#             content: |-
+#               ------BEGIN CERTIFICATE-----
+#               MII.....
+#               EXJHDJKSDsd
+#               MII.....
+#               ------END CERTIFICATE-----
+# 
+# kubectl create secret generic ubuntu-pro-token --namespace [Your Namespace] --from-literal token=[Your Ubuntu Pro Subscription Token]

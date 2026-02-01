@@ -35,3 +35,9 @@ jobs:
       - name: Getting the Node Status
         run: |
           kubectl get nodes 
+
+      - name: Creating the Cluster
+        run: |
+          pwd
+          ls -lart
+          kubectl apply -f clustercreate.yaml 
