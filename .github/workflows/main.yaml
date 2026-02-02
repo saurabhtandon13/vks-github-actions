@@ -29,11 +29,7 @@ jobs:
         run: |
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
           vcf context use supervisor-login
-
-  Cluster-Creation:
-    needs: preparing-environment
-    runs-on: arc-runner-vks
-    steps:
+      
       - name: Install kubectl CLI 
         run: |
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
