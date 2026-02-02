@@ -33,7 +33,7 @@ jobs:
 
       - name: Creating the VCF Context 
         run: |
-          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_PASSWORD}
+          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
           vcf context use supervisor-login
 
   Cluster-Creation:
