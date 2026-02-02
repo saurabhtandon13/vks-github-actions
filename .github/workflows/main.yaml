@@ -11,8 +11,8 @@ jobs:
   preparing-environment:           # name of the job
     runs-on: arc-runner-vks        # Runer location
     env:
-      SUPERVISOR_IP: "SUPERVISOR_IP"
-      VCF_CLI_VSPHERE_USERNAME: "LOGIN_USERNAME"
+      SUPERVISOR_IP: "192.168.80.6"
+      VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
       VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
     steps:
 
@@ -35,7 +35,7 @@ jobs:
         run: |
           echo $SUPERVISOR_IP
           echo $LOGIN_USERNAME
-          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${LOGIN_USERNAME}
+          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
           vcf context use supervisor-login
 
   Cluster-Creation:
