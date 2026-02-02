@@ -19,12 +19,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install kubectl CLI 
-        run: |
-          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/kubectl
-
       - name: Install VCF CLI
         run: |
           curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/v9.0.1/vcf-cli.tar.gz"
@@ -33,8 +27,6 @@ jobs:
 
       - name: Creating the VCF Context 
         run: |
-          echo $SUPERVISOR_IP
-          echo $LOGIN_USERNAME
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
           vcf context use supervisor-login
 
@@ -42,6 +34,12 @@ jobs:
     needs: preparing-environment
     runs-on: arc-runner-vks
     steps:
+      - name: Install kubectl CLI 
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+
       - name: Creating the Cluster
         run: |
           kubectl apply -f clustercreate.yaml 
