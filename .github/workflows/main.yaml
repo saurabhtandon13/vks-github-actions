@@ -18,6 +18,12 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v6
+  
+      - name: Install kubectl CLI 
+        run: | 
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
 
       - name: Install VCF CLI
         run: |
@@ -29,11 +35,6 @@ jobs:
         run: |
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
           vcf context use supervisor-login
-      
-      - name: Install kubectl CLI 
-        run: |
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/kubectl
 
       - name: Creating the Cluster
         run: |
