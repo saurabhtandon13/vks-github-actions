@@ -1,4 +1,4 @@
-name: Go CI
+name: VKS Cluster Create
 
 on:
   push:
@@ -7,14 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
-    runs-on: arc-runner-vks
+  preparing-environment:           # name of the job
+    runs-on: arc-runner-vks        # Runer location
     env:
+      SUPERVISOR_IP: 192.168.80.6
+      VCF_CLI_VSPHERE_USERNAME: administrator@vsphere.local
       VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Install kubectl CLI 
         run: |
           curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -26,18 +25,22 @@ jobs:
           curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/v9.0.1/vcf-cli.tar.gz"
           tar -xvf vcf-cli.tar.gz
           sudo mv vcf-cli-linux_amd64 /usr/local/bin/vcf
-    
+
+  cluster-creation:                # name of the job
+    runs-on: arc-runner-vks        # Runer location
+    env:
+      SUPERVISOR_IP: 192.168.80.6
+      VCF_CLI_VSPHERE_USERNAME: administrator@vsphere.local
+      VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
       - name: Creating the VCF Context 
         run: |
-          vcf context create supervisor-login --endpoint 192.168.80.6 --insecure-skip-tls-verify --username administrator@vsphere.local
-           vcf context use supervisor-login
-   
-      - name: Getting the Node Status
-        run: |
-          kubectl get nodes 
+          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_PASSWORD}
+          vcf context use supervisor-login
 
       - name: Creating the Cluster
         run: |
-          pwd
-          ls -lart
           kubectl apply -f clustercreate.yaml 
