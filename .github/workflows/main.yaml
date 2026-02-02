@@ -15,11 +15,18 @@ jobs:
       SUPERVISOR_IP: "192.168.80.6"
       VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
       VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
+      KUBECTL_VERSION: "v1.34.0"
     
     steps:
 
       - name: Checkout repository
         uses: actions/checkout@v6
+
+      - name: Install kubectl CLI 
+        run: | 
+          curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
 
       - name: Install VCF CLI
         run: |
@@ -33,8 +40,6 @@ jobs:
           vcf context use supervisor-login
 
       - name: Creating the Cluster
-        uses: steebchen/kubectl@v2.1.1
-        with:
-          version: v1.34.0          
-          binaries-url: "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
-          args: apply -f clustercreate.yaml         
+        run: |
+          kubectl apply -f clustercreate.yaml
+   
