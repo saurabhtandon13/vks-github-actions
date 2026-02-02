@@ -33,7 +33,8 @@ jobs:
           vcf context use supervisor-login
 
       - name: Creating the Cluster
-        uses: actions-hub/kubectl@master
+        uses: steebchen/kubectl@v2.1.1
         with:
-          kubectl-version: v1.34.1
+          version: v1.34.0          
+          binaries-url: "https://dl.k8s.io/release/v1.34.0/bin/linux/amd64/kubectl"
           args: apply -f clustercreate.yaml         
