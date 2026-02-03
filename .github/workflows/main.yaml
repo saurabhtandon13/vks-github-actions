@@ -45,6 +45,16 @@ jobs:
     
     steps:
 
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Cache kubectl plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.kube/plugins/my-plugin
+          key: kubectl-plugin${{ hashFiles('**/plugin-version.txt') }}
+          restore-keys: kubectl-plugin-  # Fallback to similar versions
+
       - name: Install VCF CLI
         run: |
           curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/v9.0.1/vcf-cli.tar.gz"
@@ -58,5 +68,6 @@ jobs:
 
       - name: Creating the Cluster
         run: |
+          cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin
           kubectl get nodes
    
