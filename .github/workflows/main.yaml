@@ -92,7 +92,5 @@ jobs:
 
       - name: Status Check for Workload Cluster
         shell: bash
-        run: 
-          chmod +x machine-status.sh
-          ./machine-status.sh
-      
+        run: ./scripts/machine-status.sh
+        timeout-minutes: 10 
