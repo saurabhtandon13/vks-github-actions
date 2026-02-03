@@ -11,8 +11,8 @@ env:
   SUPERVISOR_IP: "192.168.80.6"
   VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
   VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }}
-  WORKLOAD_CLUSTER_NAME: github-check
-  VSPHERE_NAMESPACE: github-actions
+  WORKLOAD_CLUSTER_NAME: "github-check"
+  VSPHERE_NAMESPACE: "github-actions"
   
 jobs:
   Downloading-Plugin:                       # name of the job
@@ -64,6 +64,7 @@ jobs:
 
       - name: Creating the Cluster
         run: |
+          env
           kubectl apply -f clustercreate.yaml
 
   # Checking-Cluster-Status:
