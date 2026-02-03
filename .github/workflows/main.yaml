@@ -10,8 +10,10 @@ on:
 env:
   SUPERVISOR_IP: "192.168.80.6"
   VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
-  VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
-
+  VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }}
+  WORKLOAD_CLUSTER_NAME: "github-check"
+  VSPHERE_NAMESPACE: "github-actions"
+  
 jobs:
   Downloading-Plugin:                       # name of the job
     runs-on: arc-runner-vks                 # Runer location
@@ -34,7 +36,7 @@ jobs:
           mkdir -p ~/.kube/plugins/my-plugin
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/${VCF_CLI_VERSION}/vcf-cli.tar.gz"
-          chmod +x kubectl; cp kubectl ~/.kube/plugins/my-plugin
+          chmod +x kubectl; cp kubectl ~/.kube/plugins/my-plugin                                                                      
           tar -xvf vcf-cli.tar.gz; mv vcf-cli-linux_amd64 vcf; chmod +x vcf; cp vcf ~/.kube/plugins/my-plugin      
           echo "v1.0" > plugin-version.txt  # For key stability
 
@@ -62,4 +64,4 @@ jobs:
 
       - name: Creating the Cluster
         run: |
-          kubectl get nodes
+          kubectl create -f clustercreate.yaml
