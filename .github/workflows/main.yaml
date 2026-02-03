@@ -58,16 +58,12 @@ jobs:
 
       - name: Creating the VCF Context 
         run: |
-          echo ${process.env.WORKLOAD_CLUSTER_NAME}
-          echo ${process.env.VSPHERE_NAMESPACE}
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
           vcf context use supervisor-login
 
       - name: Creating the Cluster
         run: |
-          echo ${process.env.WORKLOAD_CLUSTER_NAME}
-          echo ${process.env.VSPHERE_NAMESPACE}
           kubectl apply -f clustercreate.yaml
 
   # Checking-Cluster-Status:
