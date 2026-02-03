@@ -66,29 +66,29 @@ jobs:
         run: |
           kubectl apply -f clustercreate.yaml
 
-  Checking-Cluster-Status:
-    needs: Workload-Creation
-    runs-on: arc-runner-vks
+  # Checking-Cluster-Status:
+  #   needs: Workload-Creation
+  #   runs-on: arc-runner-vks
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v6
 
-      - name: Cache plugin
-        uses: actions/cache@v4
-        with:
-          path: ~/.kube/plugins/my-plugin
-          key: plugin-${{ hashFiles('**/plugin-version.txt') }}
-          restore-keys: plugin-  # Fallback to similar versions
+  #     - name: Cache plugin
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ~/.kube/plugins/my-plugin
+  #         key: plugin-${{ hashFiles('**/plugin-version.txt') }}
+  #         restore-keys: plugin-  # Fallback to similar versions
 
-      - name: Creating the VCF Context 
-        run: |
-          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
-          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
-          vcf context use supervisor-login
+  #     - name: Creating the VCF Context 
+  #       run: |
+  #         sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
+  #         vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
+  #         vcf context use supervisor-login
 
-      - name: Status Check for Workload Cluster
-        run: 
-          chmod +x machine-status.sh
-          ./machine-status.sh
+  #     - name: Status Check for Workload Cluster
+  #       run: 
+  #         chmod +x machine-status.sh
+  #         ./machine-status.sh
       

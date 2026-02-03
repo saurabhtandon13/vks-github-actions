@@ -1,8 +1,8 @@
 apiVersion: cluster.x-k8s.io/v1beta2
 kind: Cluster
 metadata:
-  name: github-check
-  namespace: github-actions
+  name: process.env.WORKLOAD_CLUSTER_NAME
+  namespace: process.env.VSPHERE_NAMESPACE
 spec:
   clusterNetwork:
     services:
