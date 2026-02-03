@@ -44,27 +44,21 @@ jobs:
           cp vcf ~/.kube/plugins/my-plugin      
           echo "v1.0" > plugin-version.txt  # For key stability
 
-  se-job:                      # name of the job
+  Workload-Creation:                          # name of the job
     needs: Downloading-Plugins
-    runs-on: arc-runner-vks        # Runer location
+    runs-on: arc-runner-vks                   # Runer location
     
     steps:
 
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Cache kubectl plugin
+      - name: Cache plugin
         uses: actions/cache@v4
         with:
           path: ~/.kube/plugins/my-plugin
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
-
-      - name: Install VCF CLI
-        run: |
-          curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/v9.0.1/vcf-cli.tar.gz"
-          tar -xvf vcf-cli.tar.gz
-          sudo mv vcf-cli-linux_amd64 /usr/local/bin/vcf
 
       - name: Creating the VCF Context 
         run: |
@@ -75,6 +69,4 @@ jobs:
 
       - name: Creating the Cluster
         run: |
-          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin
           kubectl get nodes
-   
