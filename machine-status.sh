@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NAMESPACE=process.env.VSPHERE_NAMESPACE
+NAMESPACE=${VSPHERE_NAMESPACE}
 POLL_INTERVAL=30  # seconds
 
 echo "Waiting for machines to finish provisioning in namespace: $NAMESPACE"
