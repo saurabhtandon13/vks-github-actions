@@ -34,12 +34,8 @@ jobs:
           mkdir -p ~/.kube/plugins/my-plugin
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/${VCF_CLI_VERSION}/vcf-cli.tar.gz"
-          chmod +x kubectl
-          cp kubectl ~/.kube/plugins/my-plugin
-          tar -xvf vcf-cli.tar.gz
-          mv vcf-cli-linux_amd64 vcf
-          chmod +x vcf
-          cp vcf ~/.kube/plugins/my-plugin      
+          chmod +x kubectl; cp kubectl ~/.kube/plugins/my-plugin
+          tar -xvf vcf-cli.tar.gz; mv vcf-cli-linux_amd64 vcf; chmod +x vcf; cp vcf ~/.kube/plugins/my-plugin      
           echo "v1.0" > plugin-version.txt  # For key stability
 
   Workload-Creation:                          # name of the job
@@ -60,8 +56,7 @@ jobs:
 
       - name: Creating the VCF Context 
         run: |
-          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin
-          sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
+          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
           vcf context use supervisor-login
 
