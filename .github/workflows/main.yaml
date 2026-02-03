@@ -70,6 +70,7 @@ jobs:
 
   Checking-Cluster-Status:
     needs: Workload-Creation
+    timeout-minutes: 15
     runs-on: arc-runner-vks
 
     steps:
@@ -93,6 +94,5 @@ jobs:
         shell: bash
         run: 
           chmod +x machine-status.sh
-          sed -i "s/VSPHERE_NAMESPACE/${VSPHERE_NAMESPACE}/g" machine-status.sh
           ./machine-status.sh
       
