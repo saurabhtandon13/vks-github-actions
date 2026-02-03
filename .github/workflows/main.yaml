@@ -8,13 +8,9 @@ on:
     branches: [ main ]
 
 jobs:
-  starting-cluster-creation:           # name of the job
+  first-job:                       # name of the job
     runs-on: arc-runner-vks        # Runer location
-    
     env:
-      SUPERVISOR_IP: "192.168.80.6"
-      VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
-      VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
       KUBECTL_VERSION: "v1.34.0"
     
     steps:
@@ -22,11 +18,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install kubectl CLI 
-        run: | 
+      - name: Cache kubectl plugin
+        id: kubectl-cache-plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.kube/plugins/my-plugin  # Path where plugin is stored
+          key: kubectl-plugin-${{ hashFiles('**/plugin-version.txt') }}  # Stable key (e.g., version file)
+
+      - name: Download plugin if cache miss
+        if: steps.kubectl-cache-plugin.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.kube/plugins/my-plugin
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/kubectl
+          cp kubectl ~/.kube/plugins/my-plugin
+          sudo cp kubectl /usr/local/bin/kubectl
+          echo "v1.0" > plugin-version.txt  # For key stability
+
+  second-job:                      # name of the job
+    needs: first-job
+    runs-on: arc-runner-vks        # Runer location
+    env:
+      SUPERVISOR_IP: "192.168.80.6"
+      VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
+      VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
+    
+    steps:
 
       - name: Install VCF CLI
         run: |
@@ -41,5 +58,5 @@ jobs:
 
       - name: Creating the Cluster
         run: |
-          kubectl apply -f clustercreate.yaml
+          kubectl get nodes
    
