@@ -68,6 +68,6 @@ jobs:
 
       - name: Creating the Cluster
         run: |
-          cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin
+          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin
           kubectl get nodes
    
