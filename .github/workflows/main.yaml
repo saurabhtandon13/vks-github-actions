@@ -13,7 +13,7 @@ env:
   VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
 
 jobs:
-  Downloading-Plugins:                       # name of the job
+  Downloading-Plugin:                       # name of the job
     runs-on: arc-runner-vks        # Runer location
     env:
       KUBECTL_VERSION: "v1.34.0"
@@ -45,7 +45,7 @@ jobs:
           echo "v1.0" > plugin-version.txt  # For key stability
 
   Workload-Creation:                          # name of the job
-    needs: Downloading-Plugins
+    needs: Downloading-Plugin
     runs-on: arc-runner-vks                   # Runer location
     
     steps:
