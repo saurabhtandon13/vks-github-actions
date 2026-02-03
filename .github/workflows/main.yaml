@@ -62,17 +62,10 @@ jobs:
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
           vcf context use supervisor-login
 
-      - name: Substitute envs in cluster.yaml
-        uses: nowactions/envsubst@v1   # or another envsubst action
-        with:
-          input: ./clustercreate.yaml
-          output: ./cluster.rendered.yaml
-        env:
-          CLUSTER_NAME: ${{ env.CLUSTER_NAME }}
-          VSPHERE_NAMESPACE: ${{ env.VSPHERE_NAMESPACE }}
-
       - name: Creating the Cluster
-        run: |
+        run: | 
+          sudo apt-get install -y gettext
+          envsubst < cluster.yaml > cluster.rendered.yaml
           kubectl apply -f cluster.rendered.yaml
 
   # Checking-Cluster-Status:
