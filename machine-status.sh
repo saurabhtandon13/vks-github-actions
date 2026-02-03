@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-NAMESPACE=${VSPHERE_NAMESPACE}
 POLL_INTERVAL=30  # seconds
 
-echo "Waiting for machines to finish provisioning in namespace: $NAMESPACE"
+echo "Waiting for machines to finish provisioning in namespace: VSPHERE_NAMESPACE"
 
 while true; do
     # Get machine statuses, skip header
-    STATUSES=$(kubectl get machines -n "$NAMESPACE" --no-headers | awk '{print $NF}')
+    STATUSES=$(kubectl get machines -n VSPHERE_NAMESPACE --no-headers | awk '{print $NF}')
 
     # Count states
     PROVISIONING_COUNT=$(echo "$STATUSES" | grep -c "^Provisioning$")
