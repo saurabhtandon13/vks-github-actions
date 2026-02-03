@@ -1,8 +1,8 @@
 apiVersion: cluster.x-k8s.io/v1beta2
 kind: Cluster
 metadata:
-  name: $WORKLOAD_CLUSTER_NAME
-  namespace: $VSPHERE_NAMESPACE
+  name: ${WORKLOAD_CLUSTER_NAME}
+  namespace: ${VSPHERE_NAMESPACE}
 spec:
   clusterNetwork:
     services:

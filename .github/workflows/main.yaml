@@ -62,13 +62,10 @@ jobs:
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
           vcf context use supervisor-login
 
-      - name: Render manifest with env vars
-        run: |
-          envsubst < clustercreate.yaml.tmpl > clustercreate.yaml
-
       - name: Creating the Cluster
         run: |
-          kubectl apply -f clustercreate.yaml
+          envsubst < clustercreate.yaml > cluster.rendered.yaml
+          kubectl apply -f cluster.rendered.yaml
 
   # Checking-Cluster-Status:
   #   needs: Workload-Creation
