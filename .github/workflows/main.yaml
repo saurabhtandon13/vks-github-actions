@@ -59,9 +59,9 @@ jobs:
       - name: Creating the VCF Context 
         run: |
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
-          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
+          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
           vcf context use supervisor-login
 
       - name: Creating the Cluster
         run: |
-          kubectl create -f clustercreate.yaml
+          kubectl get nodes 
