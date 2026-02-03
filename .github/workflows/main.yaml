@@ -64,7 +64,8 @@ jobs:
 
       - name: Creating the Cluster
         run: | 
-          sudo apt-get install -y gettext
+          cat /etc/os-release
+          sudo apt install gettext-base
           envsubst < cluster.yaml > cluster.rendered.yaml
           kubectl apply -f cluster.rendered.yaml
 
