@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NAMESPACE=${VSPHERE_NAMESPACE}
+NAMESPACE=github-actions
 POLL_INTERVAL=30  # seconds
 
 echo "Waiting for machines to finish provisioning in namespace: $NAMESPACE"
