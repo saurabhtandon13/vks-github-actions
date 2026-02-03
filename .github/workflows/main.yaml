@@ -13,7 +13,7 @@ env:
   VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
 
 jobs:
-  Downloading-Software:                       # name of the job
+  Downloading-Plugins:                       # name of the job
     runs-on: arc-runner-vks        # Runer location
     env:
       KUBECTL_VERSION: "v1.34.0"
@@ -39,12 +39,13 @@ jobs:
           chmod +x kubectl
           cp kubectl ~/.kube/plugins/my-plugin
           tar -xvf vcf-cli.tar.gz
+          mv vcf-cli-linux_amd64 vcf
           chmod +x vcf
-          cp vcf ~/.kube/plugins/my-plugin       
+          cp vcf ~/.kube/plugins/my-plugin      
           echo "v1.0" > plugin-version.txt  # For key stability
 
-  second-job:                      # name of the job
-    needs: Downloading-Software
+  se-job:                      # name of the job
+    needs: Downloading-Plugins
     runs-on: arc-runner-vks        # Runer location
     
     steps:
