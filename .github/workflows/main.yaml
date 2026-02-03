@@ -7,8 +7,13 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  SUPERVISOR_IP: "192.168.80.6"
+  VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
+  VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
+
 jobs:
-  first-job:                       # name of the job
+  Downloading-Software:                       # name of the job
     runs-on: arc-runner-vks        # Runer location
     env:
       KUBECTL_VERSION: "v1.34.0"
@@ -18,30 +23,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Cache kubectl plugin
-        id: kubectl-cache-plugin
+      - name: Cache plugins
+        id: cache-plugin
         uses: actions/cache@v4
         with:
           path: ~/.kube/plugins/my-plugin  # Path where plugin is stored
-          key: kubectl-plugin-${{ hashFiles('**/plugin-version.txt') }}  # Stable key (e.g., version file)
+          key: plugin-${{ hashFiles('**/plugin-version.txt') }}  # Stable key (e.g., version file)
 
       - name: Download plugin if cache miss
-        if: steps.kubectl-cache-plugin.outputs.cache-hit != 'true'
+        if: steps.cache-plugin.outputs.cache-hit != 'true'
         run: |
           mkdir -p ~/.kube/plugins/my-plugin
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
+          curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/v9.0.1/vcf-cli.tar.gz"
           chmod +x kubectl
           cp kubectl ~/.kube/plugins/my-plugin
-          sudo cp kubectl /usr/local/bin/kubectl
+          tar -xvf vcf-cli.tar.gz
+          chmod +x vcf
+          cp vcf ~/.kube/plugins/my-plugin       
           echo "v1.0" > plugin-version.txt  # For key stability
 
   second-job:                      # name of the job
-    needs: first-job
+    needs: Downloading-Software
     runs-on: arc-runner-vks        # Runer location
-    env:
-      SUPERVISOR_IP: "192.168.80.6"
-      VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
-      VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }} 
     
     steps:
 
@@ -52,8 +56,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.kube/plugins/my-plugin
-          key: kubectl-plugin${{ hashFiles('**/plugin-version.txt') }}
-          restore-keys: kubectl-plugin-  # Fallback to similar versions
+          key: plugin-${{ hashFiles('**/plugin-version.txt') }}
+          restore-keys: plugin-  # Fallback to similar versions
 
       - name: Install VCF CLI
         run: |
@@ -63,6 +67,8 @@ jobs:
 
       - name: Creating the VCF Context 
         run: |
+          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin
+          sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME}
           vcf context use supervisor-login
 
