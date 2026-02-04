@@ -56,7 +56,7 @@ jobs:
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
 
-      - name: Cache vcf plugins
+      - name: Cache vcf plugins-01
         id: vcf-cache-plugin
         uses: actions/cache@v4
         with:
@@ -76,12 +76,12 @@ jobs:
 
       - name: Logging to Cluster
         id: context-exists
-        if: steps.creating-context.outputs.cache-hit != 'true'
+        if: steps.creating-context.outputs.cache-hit != 'false'
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
            vcf context refresh supervisor-login
 
-      - name: Cache vcf plugins
+      - name: Cache vcf plugins-02
         if: steps.context-exists.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
