@@ -61,8 +61,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/.config  # Path where plugin is stored
-            ~/.kube
+             .config  # Path where plugin is stored
+             .kube
           key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
           restore-keys: vcfplugin-
 
@@ -80,8 +80,8 @@ jobs:
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
            ls -lart 
-           ls -lart ~/.config
-           ls -lart ~/.kube
+           ls -lart .config
+           ls -lart .kube
            vcf context list
            vcf context refresh supervisor-login
 
@@ -90,8 +90,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: | # Path where plugin is stored
-            ~/.config
-            ~/.kube
+            .config
+            .kube
           key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
           
       - name: Creating the Cluster
