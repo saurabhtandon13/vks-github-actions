@@ -38,6 +38,7 @@ jobs:
           curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/${VCF_CLI_VERSION}/vcf-cli.tar.gz"
           chmod +x kubectl; cp kubectl ~/.kube/plugins/my-plugin                                                                      
           tar -xvf vcf-cli.tar.gz; mv vcf-cli-linux_amd64 vcf; chmod +x vcf; cp vcf ~/.kube/plugins/my-plugin
+          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s 
           cp ~/.config ~/.kube/plugins/my-plugin
           cp ~/.kube ~/.kube/plugins/my-plugin
