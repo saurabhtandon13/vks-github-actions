@@ -128,8 +128,8 @@ jobs:
           cp -r  ~/.kube/plugins/my-plugin/.config ~
           vcf context refresh supervisor-login
           vcf context use supervisor-login
-          kubectl get addoninstall -n  ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep '{WORKLOAD_CLUSTER_NAME}$' | xargs -r kubectl delete addoninstall -n ${VSPHERE_NAMESPACE}
-          sleep 5
+          kubectl get addoninstall -A
+          kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | xargs -r kubectl delete addoninstall -n ${VSPHERE_NAMESPACE}
           vcf addon install create cert-manager --cluster-name ${WORKLOAD_CLUSTER_NAME} --namespace ${VSPHERE_NAMESPACE} -y
 
       
