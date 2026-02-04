@@ -7,8 +7,8 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  SUPERVISOR_IP: "192.168.80.6"
+env:                                                    # Global Environment Variable 
+  SUPERVISOR_IP: "192.168.80.6"        
   VCF_CLI_VSPHERE_USERNAME: "administrator@vsphere.local"
   VCF_CLI_VSPHERE_PASSWORD: ${{ secrets.VCF_CLI_VSPHERE_PASSWORD }}
   WORKLOAD_CLUSTER_NAME: "github-check"
@@ -18,7 +18,7 @@ jobs:
   Downloading-Plugin:                       # name of the job
     runs-on: arc-runner-vks                 # Runer location
     env:
-      KUBECTL_VERSION: "v1.34.0"
+      KUBECTL_VERSION: "v1.34.0"            # local Environment variable 
       VCF_CLI_VERSION: "v9.0.1"
     
     steps:
@@ -59,9 +59,15 @@ jobs:
       - name: Creating the VCF Context 
         run: |
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
-          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
+          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s
           vcf context use supervisor-login
 
+      - name: Cache vcf plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.config  # Path where plugin is stored
+          key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
+      
       - name: Creating the Cluster
         run: | 
           sed -i "s/WORKLOAD_CLUSTER_NAME/${WORKLOAD_CLUSTER_NAME}/g" clustercreate.yaml
@@ -84,6 +90,13 @@ jobs:
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
 
+      - name: Cache vcf plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.config  # Path where plugin is stored
+          key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
+          restore-keys: vcfplugin-
+
       - name: Creating the VCF Context 
         run: |
           chmod +x ./scripts/machine-status.sh
@@ -94,4 +107,4 @@ jobs:
       - name: Status Check for Workload Cluster
         shell: bash
         run: ./scripts/machine-status.sh
-        timeout-minutes: 10 
+        timeout-minutes: 15
