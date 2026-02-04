@@ -81,7 +81,6 @@ jobs:
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
            vcf context refresh supervisor-login
 
-      - name: Cache vcf plugins-02
         if: steps.context-exists.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
