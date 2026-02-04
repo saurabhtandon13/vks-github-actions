@@ -60,23 +60,6 @@ jobs:
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
 
-      # - name: Cache vcf plugins-01
-      #   id: vcf-cache-plugin
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: |
-      #        .config  # Path where plugin is stored
-      #        .kube
-      #     key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
-
-      # - name: Creating the VCF Context
-      #   id: creating-context
-      #   if: steps.vcf-cache-plugin.outputs.cache-hit != 'true'
-      #   run: |
-      #     sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
-      #     vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s
-      #     vcf context use supervisor-login
-
       - name: Logging to Cluster
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
@@ -84,24 +67,12 @@ jobs:
            cp -r  ~/.kube/plugins/my-plugin/.config ~
            vcf context refresh supervisor-login
            kubectl config use-context supervisor-login
-
-      # - name: Cache vcf plugins-02
-      #   if: steps.context-exists.outputs.cache-hit != 'true'
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: | # Path where plugin is stored
-      #       .config
-      #       .kube
-      #     key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
           
       - name: Creating the Cluster
         run: |     
           sed -i "s/WORKLOAD_CLUSTER_NAME/${WORKLOAD_CLUSTER_NAME}/g" clustercreate.yaml
           sed -i "s/VSPHERE_NAMESPACE/${VSPHERE_NAMESPACE}/g" clustercreate.yaml
-          kubectl get nodes
-
-      - name: stop for failure
-        run: sleeeppppp
+          kubectl apply -f clustercreate.yaml
 
   Checking-Cluster-Status:
     needs: Workload-Creation
