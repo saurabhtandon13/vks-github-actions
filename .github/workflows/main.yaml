@@ -76,9 +76,13 @@ jobs:
 
       - name: Logging to Cluster
         id: context-exists
-        if: steps.creating-context.outputs.cache-hit != 'false'
+        if: steps.creating-context.outputs.cache-hit != 'true'
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
+           ls -lart 
+           ls -lart ~/.config
+           ls -lart ~/.kube
+           vcf context list
            vcf context refresh supervisor-login
 
       - name: Cache vcf plugins-02
@@ -95,6 +99,9 @@ jobs:
           sed -i "s/WORKLOAD_CLUSTER_NAME/${WORKLOAD_CLUSTER_NAME}/g" clustercreate.yaml
           sed -i "s/VSPHERE_NAMESPACE/${VSPHERE_NAMESPACE}/g" clustercreate.yaml
           kubectl get nodes
+
+      - name: stop for failure
+        run: sleeeppppp
 
   Checking-Cluster-Status:
     needs: Workload-Creation
