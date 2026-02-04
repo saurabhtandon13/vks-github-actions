@@ -64,7 +64,6 @@ jobs:
              .config  # Path where plugin is stored
              .kube
           key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
-          restore-keys: vcfplugin-
 
       - name: Creating the VCF Context
         id: creating-context
