@@ -81,7 +81,7 @@ jobs:
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
            cp ~/.kube/plugins/my-plugin/config ~/.kube
-           cp ~/.kube/plugins/my-plugin/.config ~
+           cp -r  ~/.kube/plugins/my-plugin/.config ~
            vcf context list
            vcf context refresh supervisor-login
 
