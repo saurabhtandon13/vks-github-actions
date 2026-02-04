@@ -41,7 +41,7 @@ jobs:
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s 
           cp -r ~/.config ~/.kube/plugins/my-plugin
-          cp -r ~/.kube ~/.kube/plugins/my-plugin
+          cp -r ~/.kube/config ~/.kube/plugins/my-plugin
           echo "v1.0" > plugin-version.txt  # For key stability
 
   Workload-Creation:                          # name of the job
@@ -80,6 +80,8 @@ jobs:
       - name: Logging to Cluster
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
+           mkdir ~/.kube ; cp ~/.kube/plugins/my-plugin/config ~/.kube
+           cp ~/.kube/plugins/my-plugin/.config ~
            vcf context list
            vcf context refresh supervisor-login
 
