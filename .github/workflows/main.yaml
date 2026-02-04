@@ -76,7 +76,6 @@ jobs:
 
   Checking-Cluster-Status:
     needs: Workload-Creation
-    timeout-minutes: 15
     runs-on: arc-runner-vks
 
     steps:
@@ -90,19 +89,14 @@ jobs:
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
 
-      - name: Cache vcf plugins
-        uses: actions/cache@v4
-        with:
-          path: ~/.config  # Path where plugin is stored
-          key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
-          restore-keys: vcfplugin-
-
       - name: Creating the VCF Context 
         run: |
           chmod +x ./scripts/machine-status.sh
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
-          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s --skip-create-related-contexts
-          vcf context use supervisor-login
+          cp ~/.kube/plugins/my-plugin/config ~/.kube
+          cp -r  ~/.kube/plugins/my-plugin/.config ~
+          vcf context refresh supervisor-login
+          kubectl config use-context supervisor-login
 
       - name: Status Check for Workload Cluster
         shell: bash
