@@ -56,23 +56,39 @@ jobs:
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
 
-      - name: Creating the VCF Context 
+      - name: Cache vcf plugins
+        id: vcf-cache-plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.config  # Path where plugin is stored
+          key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
+
+      - name: Creating the VCF Context
+        id: creating-context
+        if: steps.vcf-cache-plugin.outputs.cache-hit != 'true'
         run: |
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s
           vcf context use supervisor-login
 
+      - name: Logging to Cluster
+        id: context-exists
+        if: steps.creating-context.outputs.cache-hit != 'true'
+        run: |
+           vcf context refresh supervisor-login
+
       - name: Cache vcf plugins
+        if: steps.context-exists.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: ~/.config  # Path where plugin is stored
           key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
-      
+          
       - name: Creating the Cluster
-        run: | 
+        run: |     
           sed -i "s/WORKLOAD_CLUSTER_NAME/${WORKLOAD_CLUSTER_NAME}/g" clustercreate.yaml
           sed -i "s/VSPHERE_NAMESPACE/${VSPHERE_NAMESPACE}/g" clustercreate.yaml
-          kubectl apply -f clustercreate.yaml
+          kubectl get nodes
 
   Checking-Cluster-Status:
     needs: Workload-Creation
