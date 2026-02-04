@@ -60,8 +60,11 @@ jobs:
         id: vcf-cache-plugin
         uses: actions/cache@v4
         with:
-          path: ~/.config  # Path where plugin is stored
+          path: |
+            ~/.config  # Path where plugin is stored
+            ~/.kube
           key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
+          restore-keys: vcfplugin-
 
       - name: Creating the VCF Context
         id: creating-context
@@ -82,7 +85,9 @@ jobs:
         if: steps.context-exists.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
-          path: ~/.config  # Path where plugin is stored
+          path: | # Path where plugin is stored
+            ~/.config
+            ~/.kube
           key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
           
       - name: Creating the Cluster
