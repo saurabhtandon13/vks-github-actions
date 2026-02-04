@@ -124,14 +124,14 @@ jobs:
           cp ~/.kube/plugins/my-plugin/config ~/.kube
           cp -r  ~/.kube/plugins/my-plugin/.config ~
           vcf context refresh supervisor-login
-          kubectl config use-context supervisor-login
+          vcf context use supervisor-login
           vcf addon install create cert-manager --cluster-name ${WORKLOAD_CLUSTER_NAME} --namespace ${VSPHERE_NAMESPACE} -y
 
       
       - name: Checking the Installation Status
         run: |
           vcf context create ${WORKLOAD_CLUSTER_NAME} --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --workload-cluster-namespace ${VSPHERE_NAMESPACE} --workload-cluster-name ${WORKLOAD_CLUSTER_NAME}
-          vcf context use ${WORKLOAD_CLUSTER_NAME}:${WORKLOAD_CLUSTER_NAME}
+          kubectl config use-context ${WORKLOAD_CLUSTER_NAME}:${WORKLOAD_CLUSTER_NAME}
           kubectl get nodes 
           kubectl get pods -A
 
