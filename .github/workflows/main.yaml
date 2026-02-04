@@ -22,7 +22,7 @@ jobs:
       VCF_CLI_VERSION: "v9.0.1"
     
     steps:
-
+    
       - name: Cache plugins
         id: cache-plugin
         uses: actions/cache@v4
@@ -56,14 +56,14 @@ jobs:
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
 
-      - name: Cache vcf plugins-01
-        id: vcf-cache-plugin
-        uses: actions/cache@v4
-        with:
-          path: |
-             .config  # Path where plugin is stored
-             .kube
-          key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
+      # - name: Cache vcf plugins-01
+      #   id: vcf-cache-plugin
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: |
+      #        .config  # Path where plugin is stored
+      #        .kube
+      #     key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
 
       - name: Creating the VCF Context
         id: creating-context
@@ -79,6 +79,8 @@ jobs:
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
            ls -lart 
+           ls -lart /root
+           ls -lart ~
            ls -lart .config
            ls -lart .kube
            vcf context list
