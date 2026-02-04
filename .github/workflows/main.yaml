@@ -84,6 +84,7 @@ jobs:
            cp -r  ~/.kube/plugins/my-plugin/.config ~
            vcf context list
            vcf context refresh supervisor-login
+           vcf context use supervisor-login
 
       # - name: Cache vcf plugins-02
       #   if: steps.context-exists.outputs.cache-hit != 'true'
