@@ -27,8 +27,8 @@ jobs:
         id: cache-plugin
         uses: actions/cache@v4
         with:
-          path: ~/.kube/plugins/my-plugin  # Path where plugin is stored
-          key: plugin-${{ hashFiles('**/plugin-version.txt') }}  # Stable key (e.g., version file)
+          path: ~/.kube/plugins/my-plugin                           # Path where plugin is stored
+          key: plugin-${{ hashFiles('**/plugin-version.txt') }}     # Stable key (e.g., version file)
 
       - name: Download plugin if cache miss
         if: steps.cache-plugin.outputs.cache-hit != 'true'
@@ -37,7 +37,10 @@ jobs:
           curl -LO "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl"
           curl -LO "https://packages.broadcom.com/artifactory/vcf-distro/vcf-cli/linux/amd64/${VCF_CLI_VERSION}/vcf-cli.tar.gz"
           chmod +x kubectl; cp kubectl ~/.kube/plugins/my-plugin                                                                      
-          tar -xvf vcf-cli.tar.gz; mv vcf-cli-linux_amd64 vcf; chmod +x vcf; cp vcf ~/.kube/plugins/my-plugin      
+          tar -xvf vcf-cli.tar.gz; mv vcf-cli-linux_amd64 vcf; chmod +x vcf; cp vcf ~/.kube/plugins/my-plugin
+          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s 
+          cp ~/.config ~/.kube/plugins/my-plugin
+          cp ~/.kube ~/.kube/plugins/my-plugin
           echo "v1.0" > plugin-version.txt  # For key stability
 
   Workload-Creation:                          # name of the job
@@ -65,34 +68,28 @@ jobs:
       #        .kube
       #     key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
 
-      - name: Creating the VCF Context
-        id: creating-context
-        if: steps.vcf-cache-plugin.outputs.cache-hit != 'true'
-        run: |
-          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
-          vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s
-          vcf context use supervisor-login
+      # - name: Creating the VCF Context
+      #   id: creating-context
+      #   if: steps.vcf-cache-plugin.outputs.cache-hit != 'true'
+      #   run: |
+      #     sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
+      #     vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s
+      #     vcf context use supervisor-login
 
       - name: Logging to Cluster
-        id: context-exists
-        if: steps.creating-context.outputs.cache-hit != 'true'
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
-           ls -lart 
-           ls -lart ~
-           ls -lart ~/.config
-           ls -lart ~/.kube
            vcf context list
            vcf context refresh supervisor-login
 
-      - name: Cache vcf plugins-02
-        if: steps.context-exists.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: | # Path where plugin is stored
-            .config
-            .kube
-          key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
+      # - name: Cache vcf plugins-02
+      #   if: steps.context-exists.outputs.cache-hit != 'true'
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: | # Path where plugin is stored
+      #       .config
+      #       .kube
+      #     key: vcfplugin-${{ hashFiles('**/vcfplugin-version.txt') }}  # Stable key (e.g., version file)
           
       - name: Creating the Cluster
         run: |     
