@@ -14,7 +14,7 @@ echo "Waiting for machines to become Ready"
 echo "Namespace      : $NAMESPACE"
 echo "Name prefix    : $MACHINE_PREFIX"
 echo "Poll interval  : $POLL_INTERVAL seconds"
-echo "⏱Timeout       : $TIMEOUT_SECONDS seconds"
+echo "Timeout       : $TIMEOUT_SECONDS seconds"
 echo "--------------------------------------------"
 
 while true; do
