@@ -75,6 +75,7 @@ jobs:
         id: context-exists
         if: steps.creating-context.outputs.cache-hit != 'true'
         run: |
+           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
            vcf context refresh supervisor-login
 
       - name: Cache vcf plugins
