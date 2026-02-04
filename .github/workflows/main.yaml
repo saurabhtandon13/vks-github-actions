@@ -79,10 +79,10 @@ jobs:
         run: |
            sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
            ls -lart 
-           ls -lart /root
            ls -lart ~
-           ls -lart .config
-           ls -lart .kube
+           sudo ls -lart /root
+           sudo ls -lart /root/.config
+           sudo ls -lart /root/.kube
            vcf context list
            vcf context refresh supervisor-login
 
