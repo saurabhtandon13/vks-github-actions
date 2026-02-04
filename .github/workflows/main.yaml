@@ -40,8 +40,8 @@ jobs:
           tar -xvf vcf-cli.tar.gz; mv vcf-cli-linux_amd64 vcf; chmod +x vcf; cp vcf ~/.kube/plugins/my-plugin
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           vcf context create supervisor-login --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --type k8s 
-          cp ~/.config ~/.kube/plugins/my-plugin
-          cp ~/.kube ~/.kube/plugins/my-plugin
+          cp -r ~/.config ~/.kube/plugins/my-plugin
+          cp -r ~/.kube ~/.kube/plugins/my-plugin
           echo "v1.0" > plugin-version.txt  # For key stability
 
   Workload-Creation:                          # name of the job
