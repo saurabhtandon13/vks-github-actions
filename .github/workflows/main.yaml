@@ -104,7 +104,10 @@ jobs:
         timeout-minutes: 20
 
   AddOn-Installation-Cert-Manager:
-    needs: Checking-Cluster-Status
+    needs: Checking-Cluster-Status  
+    env:
+      NAMESPACE: cert-manager
+
     runs-on: arc-runner-vks
 
     steps:
@@ -118,7 +121,7 @@ jobs:
           key: plugin-${{ hashFiles('**/plugin-version.txt') }}
           restore-keys: plugin-  # Fallback to similar versions
 
-      - name: Installing Cert Manager AddOn on ${WORKLOAD_CLUSTER_NAME}
+      - name: Installing Cert Manager AddOn on Workload Cluster
         run: |
           sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
           cp ~/.kube/plugins/my-plugin/config ~/.kube
@@ -129,9 +132,18 @@ jobs:
 
       
       - name: Checking the Installation Status
+        shell: bash
         run: |
+          chmod +x ./scripts/pod-status-check.sh
           vcf context create ${WORKLOAD_CLUSTER_NAME} --endpoint ${SUPERVISOR_IP} --insecure-skip-tls-verify --username ${VCF_CLI_VSPHERE_USERNAME} --workload-cluster-namespace ${VSPHERE_NAMESPACE} --workload-cluster-name ${WORKLOAD_CLUSTER_NAME}
           kubectl config use-context ${WORKLOAD_CLUSTER_NAME}:${WORKLOAD_CLUSTER_NAME}
-          kubectl get nodes 
-          kubectl get pods -A
+          ./scripts/pod-status-check.sh
 
+  Cluster-Status:
+    needs: AddOn-Installation-Cert-Manager
+    runs-on: arc-runner-vks
+    
+    steps:
+      - name: Workload Status 
+        run:
+          echo "Cluster Creation Completed Successfully" 
