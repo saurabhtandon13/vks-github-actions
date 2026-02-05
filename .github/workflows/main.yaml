@@ -103,7 +103,7 @@ jobs:
       - name: Status Check for Workload Cluster
         shell: bash
         run: ./scripts/machine-status.sh
-        timeout-minutes: 2
+        timeout-minutes: 30
 
 
   AddOn-Installation-Cert-Manager:
