@@ -105,10 +105,6 @@ jobs:
         run: ./scripts/machine-status.sh
         timeout-minutes: 20
 
-      - name: injecting the error
-        run: |
-          sleeepp 10
-
   AddOn-Installation-Cert-Manager:
     needs: Checking-Cluster-Status  
     env:
