@@ -74,6 +74,8 @@ jobs:
           sed -i "s/VSPHERE_NAMESPACE/${VSPHERE_NAMESPACE}/g" clustercreate.yaml
           kubectl apply -f clustercreate.yaml
 
+      
+
   Checking-Cluster-Status:
     needs: Workload-Creation
     runs-on: arc-runner-vks
@@ -102,6 +104,10 @@ jobs:
         shell: bash
         run: ./scripts/machine-status.sh
         timeout-minutes: 20
+
+      - name: injecting the error
+        run: |
+          sleeepp 10
 
   AddOn-Installation-Cert-Manager:
     needs: Checking-Cluster-Status  
