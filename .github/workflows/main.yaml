@@ -132,9 +132,7 @@ jobs:
           kubectl config use-context supervisor-login
           sed -i "s/WORKLOAD_CLUSTER_NAME/${WORKLOAD_CLUSTER_NAME}/g" ./addons/cert-manager/addon-cert-manager.yaml
           sed -i "s/VSPHERE_NAMESPACE/${VSPHERE_NAMESPACE}/g" ./addons/cert-manager/addon-cert-manager.yaml
-          cat  ./addons/cert-manager/addon-cert-manager.yaml
-          kubectl get nodes
-          if [ `kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | wc -l` == "0" ] ; then `kubectl apply -f ./addons/cert-manager/addon-cert-manager.yaml` ; fi
+          if [ kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | wc -l == "0" ] ; then kubectl apply -f ./addons/cert-manager/addon-cert-manager.yaml ; fi
 
       
       - name: Checking the Installation Status
