@@ -1,0 +1,12 @@
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonInstall
+metadata:
+  name: WORKLOAD_CLUSTER_NAME-cert-manager
+  namespace: VSPHERE_NAMESPACE
+spec:
+  addonRef:
+    name: cert-manager
+  clusters:
+  - selector:
+      matchLabels:
+        cluster.x-k8s.io/cluster-name: WORKLOAD_CLUSTER_NAME
