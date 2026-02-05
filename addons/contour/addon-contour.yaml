@@ -20,7 +20,7 @@ metadata:
     clusteraddon.addons.kubernetes.vmware.com/owned-for-deletion: "true"
 spec:
   addonConfigDefinitionRef:
-    name: RELEASE-NAME
+    name: WORKLOAD_CLUSTER_NAME-contour
     namespace: vmware-system-vks-public
   clusterName: WORKLOAD_CLUSTER_NAME
   values:

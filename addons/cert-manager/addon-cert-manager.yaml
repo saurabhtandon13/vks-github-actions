@@ -3,6 +3,8 @@ kind: AddonInstall
 metadata:
   name: WORKLOAD_CLUSTER_NAME-cert-manager
   namespace: VSPHERE_NAMESPACE
+  annotations:
+    clusteraddon.addons.kubernetes.vmware.com/owned-for-deletion: "true"
 spec:
   addonRef:
     name: cert-manager
