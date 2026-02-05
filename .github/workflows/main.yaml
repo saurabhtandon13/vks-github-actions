@@ -149,3 +149,41 @@ jobs:
       - name: Workload Status 
         run:
           echo "Cluster Creation Completed Successfully" 
+
+  Clean-up:
+    name: Failure Approval & Handling
+    needs: [Workload-Creation, Checking-Cluster-Status ]
+    runs-on: arc-runner-vks
+
+    if: failure()  # failure Approval & Handling
+
+    environment:            # This triggers manual approval
+      name: failure-approval  
+
+    steps:
+      - name: Cache plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.kube/plugins/my-plugin
+          key: plugin-${{ hashFiles('**/plugin-version.txt') }}
+          restore-keys: plugin-              # Fallback to similar versions
+
+      - name: Creating the VCF Context 
+        run: |
+          chmod +x ./scripts/machine-status.sh
+          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
+          cp ~/.kube/plugins/my-plugin/config ~/.kube
+          cp -r  ~/.kube/plugins/my-plugin/.config ~
+          vcf context refresh supervisor-login
+          kubectl config use-context supervisor-login
+
+      - name: Deleting the Cluster
+        run: |
+          kubectl delete cluster ${WORKLOAD_CLUSTER_NAME} -n ${VSPHERE_NAMESPACE}
+          kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | xargs -r kubectl delete addoninstall -n ${VSPHERE_NAMESPACE}
+          
+
+        
+      
+      
+        
