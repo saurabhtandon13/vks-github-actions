@@ -72,7 +72,7 @@ jobs:
         run: |     
           sed -i "s/WORKLOAD_CLUSTER_NAME/${WORKLOAD_CLUSTER_NAME}/g" clustercreate.yaml
           sed -i "s/VSPHERE_NAMESPACE/${VSPHERE_NAMESPACE}/g" clustercreate.yaml
-          kubectl apply -f clustercreate.yaml
+          kubectl apply -f clustercreate.yaml        
 
       
 
@@ -104,6 +104,11 @@ jobs:
         shell: bash
         run: ./scripts/machine-status.sh
         timeout-minutes: 20
+
+      - name: Injecting Error 
+        run: |
+          sleeepppp 10
+  
 
   AddOn-Installation-Cert-Manager:
     needs: Checking-Cluster-Status  
