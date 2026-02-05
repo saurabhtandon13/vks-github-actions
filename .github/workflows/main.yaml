@@ -129,7 +129,7 @@ jobs:
           vcf context refresh supervisor-login
           vcf context use supervisor-login
           kubectl get addoninstall -A
-          vcf addon install create cert-manager --cluster-name ${WORKLOAD_CLUSTER_NAME} --namespace ${VSPHERE_NAMESPACE} -y
+          if [kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | wc -l > 0] ; then continue ; else 'vcf addon install create cert-manager --cluster-name ${WORKLOAD_CLUSTER_NAME} --namespace ${VSPHERE_NAMESPACE} -y' ; fi
 
       
       - name: Checking the Installation Status
