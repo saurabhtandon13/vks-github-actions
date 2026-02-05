@@ -129,7 +129,6 @@ jobs:
           vcf context refresh supervisor-login
           vcf context use supervisor-login
           kubectl get addoninstall -A
-          kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | xargs -r kubectl delete addoninstall -n ${VSPHERE_NAMESPACE}
           vcf addon install create cert-manager --cluster-name ${WORKLOAD_CLUSTER_NAME} --namespace ${VSPHERE_NAMESPACE} -y
 
       
@@ -150,9 +149,11 @@ jobs:
         run:
           echo "Cluster Creation Completed Successfully" 
 
-  Clean-up:
-    name: Failure Approval & Handling
-    needs: [Workload-Creation, Checking-Cluster-Status ]
+  Clean-up-Cluster:
+    name: Failure Approval & Handling for Cluster
+    needs: 
+      - Workload-Creation
+      - Checking-Cluster-Status
     runs-on: arc-runner-vks
 
     if: failure()  # failure Approval & Handling
@@ -183,6 +184,37 @@ jobs:
           kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | xargs -r kubectl delete addoninstall -n ${VSPHERE_NAMESPACE}
           
 
+  Clean-up-Cluster-Addons:
+    name: Failure Approval & Handling for Cluster Addons
+    needs: 
+      - AddOn-Installation-Cert-Manager
+    runs-on: arc-runner-vks
+
+    if: failure()  # failure Approval & Handling
+
+    environment:            # This triggers manual approval
+      name: failure-approval  
+
+    steps:
+      - name: Cache plugin
+        uses: actions/cache@v4
+        with:
+          path: ~/.kube/plugins/my-plugin
+          key: plugin-${{ hashFiles('**/plugin-version.txt') }}
+          restore-keys: plugin-              # Fallback to similar versions
+
+      - name: Creating the VCF Context 
+        run: |
+          chmod +x ./scripts/machine-status.sh
+          sudo cp ~/.kube/plugins/my-plugin/kubectl /usr/local/bin; sudo cp ~/.kube/plugins/my-plugin/vcf /usr/local/bin
+          cp ~/.kube/plugins/my-plugin/config ~/.kube
+          cp -r  ~/.kube/plugins/my-plugin/.config ~
+          vcf context refresh supervisor-login
+          kubectl config use-context supervisor-login
+
+      - name: Deleting the Cluster
+        run: |
+          kubectl get addoninstall -n ${VSPHERE_NAMESPACE} --no-headers -o custom-columns=":metadata.name" | grep -i ${WORKLOAD_CLUSTER_NAME} | xargs -r kubectl delete addoninstall -n ${VSPHERE_NAMESPACE}
         
       
       
