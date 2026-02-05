@@ -1,0 +1,29 @@
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonInstall
+metadata:
+  name: WORKLOAD_CLUSTER_NAME-contour
+  namespace: VSPHERE_NAMESPACE
+spec:
+  addonRef:
+    name: contour
+  clusters:
+  - selector:
+      matchLabels:
+        cluster.x-k8s.io/cluster-name: WORKLOAD_CLUSTER_NAME
+---
+apiVersion: addons.kubernetes.vmware.com/v1alpha1
+kind: AddonConfig
+metadata:
+  name: WORKLOAD_CLUSTER_NAME-contour       #naming convention is a key it should be <cluster-name>-<package-name>
+  namespace: VSPHERE_NAMESPACE
+  annotations:
+    clusteraddon.addons.kubernetes.vmware.com/owned-for-deletion: "true"
+spec:
+  addonConfigDefinitionRef:
+    name: RELEASE-NAME
+    namespace: vmware-system-vks-public
+  clusterName: WORKLOAD_CLUSTER_NAME
+  values:
+    envoy:
+      service:
+        type: LoadBalancer
