@@ -3,9 +3,9 @@ name: VKS Cluster Create
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ finance ]
   pull_request:
-    branches: [ main ]
+    branches: [ finance ]
 
 env:                                                    # Global Environment Variable 
   SUPERVISOR_IP: "192.168.80.6"        
