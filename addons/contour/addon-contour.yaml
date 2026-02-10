@@ -28,7 +28,7 @@ spec:
       configFileContents:
         gateway:
           gatewayRef:
-            name: contour
+            name: contour-gateway
             namespace: tanzu-system-ingress
     envoy:
       service:
