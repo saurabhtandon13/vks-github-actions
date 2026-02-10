@@ -1,0 +1,29 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: global-issuer
+  namespace: tanzu-system-ingress
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: global-cert
+  namespace: tanzu-system-ingress
+spec:
+  isCA: true
+  commonName: "*.cloudapps.lvnlab.internal"
+  secretName: global-cert
+  dnsNames:
+    - "*.cloudapps.lvnlab.internal"
+    - cloudapps.lvnlab.internal
+  duration: 8760h
+  renewBefore: 240h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: global-issuer
+    kind: Issuer
+    group: cert-manager.io
