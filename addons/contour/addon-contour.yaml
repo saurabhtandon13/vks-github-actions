@@ -24,12 +24,6 @@ spec:
     namespace: vmware-system-vks-public
   clusterName: WORKLOAD_CLUSTER_NAME
   values:
-    contour:
-      configFileContents:
-        gateway:
-          gatewayRef:
-            name: contour-gateway
-            namespace: tanzu-system-ingress
     envoy:
       service:
         type: LoadBalancer
