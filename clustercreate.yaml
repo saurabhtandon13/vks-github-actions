@@ -12,9 +12,9 @@ spec:
     serviceDomain: "cluster.local"
   topology:
     classRef:
-      name: builtin-generic-v3.5.0
+      name: builtin-generic-v3.6.0
       namespace: vmware-system-vks-public
-    version: v1.34.2---vmware.2-vkr.2
+    version: v1.35.0---vmware.2-vkr.4
     controlPlane:
       replicas: 1
       metadata:
